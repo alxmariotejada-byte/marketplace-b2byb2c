@@ -46,6 +46,8 @@ Los pagos son **simulados** (no se cobra nada ni se guarda la tarjeta).
 
 ## Conexión con el ERP/OMS de LOGIMKT (Grupos A y B)
 
+Guía de despliegue paso a paso: [DESPLIEGUE_ERP.md](DESPLIEGUE_ERP.md).
+
 La tienda se conecta a la API del ERP de [Marzza01/ERP-Log-stica-](https://github.com/Marzza01/ERP-Log-stica-):
 
 | Dirección | Qué pasa | Endpoint del ERP |
