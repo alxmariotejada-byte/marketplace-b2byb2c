@@ -54,6 +54,7 @@ carrito, checkout con 3 métodos de pago, reseñas y calificaciones, categorías
 | `/catalogo` | Cliente | Búsqueda y filtros (texto, categoría, subcategoría, precio, solo disponibles, orden) |
 | `/producto/[sku]` | Cliente | Ficha con precio según modo, stock, peso/medidas, código EAN-13, reseñas |
 | `/carrito`, `/checkout` | Cliente | Carrito en el navegador; checkout con 3 métodos de pago simulados por tipo de cliente |
+| `/politicas`, `/politicas/[tema]` | Cliente | Políticas: términos, pedidos y stock, pagos, envíos, cancelaciones, devoluciones, privacidad (texto en `src/lib/policies.ts`, cifras tomadas de `shared.ts`) |
 | `/pedido/[codigo]` | Cliente | Seguimiento del pedido, línea de tiempo, guía, estado en el ERP, encuesta NPS |
 | `/admin` | Operación | Dashboard de 8 KPIs con semáforo |
 | `/admin/pedidos` | Operación | OMS interno: avanzar estados, cancelar, devolver |

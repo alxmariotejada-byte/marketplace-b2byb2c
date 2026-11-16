@@ -2,7 +2,7 @@ import Link from "next/link";
 import { isAdmin } from "@/lib/session";
 import { query } from "@/lib/db";
 import { nextStatus, type OrderRow } from "@/lib/orders";
-import { money, statusColor } from "@/lib/shared";
+import { RETURN_REASONS, money, statusColor } from "@/lib/shared";
 import { advanceOrderAction, cancelOrderAction, returnOrderAction } from "@/app/actions";
 
 const STATES = ["", "Confirmado", "En preparación", "Enviado", "Entregado", "Cerrado", "Devuelto", "Cancelado"];
@@ -97,10 +97,7 @@ export default async function PedidosAdmin({ searchParams }: PageProps<"/admin/p
                           <input type="hidden" name="code" value={o.code} />
                           <input type="hidden" name="back" value={back} />
                           <select name="reason" className="rounded-lg border border-linea px-1 py-1 text-xs">
-                            <option>Producto defectuoso</option>
-                            <option>Producto equivocado</option>
-                            <option>Llegó dañado</option>
-                            <option>Cliente se arrepintió</option>
+                            {RETURN_REASONS.map((r) => <option key={r}>{r}</option>)}
                           </select>
                           <button className="rounded-lg border border-orange-300 px-2 py-1 text-xs text-orange-700 hover:bg-orange-50">Devolver</button>
                         </form>

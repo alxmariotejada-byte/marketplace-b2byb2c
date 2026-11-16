@@ -7,6 +7,12 @@ export const B2C_MIN_ORDER = 5; // compra mínima consumidor final ($)
 export const B2C_FREE_SHIPPING_FROM = 50;
 export const B2C_SHIPPING = 3.5;
 
+/** Días prometidos de entrega según el canal (desde la confirmación). */
+export const PROMISE_DAYS: Record<Channel, number> = { B2C: 3, B2B: 5 };
+export const CARRIERS = ["C807 Xpress", "Urbano Express", "DHL El Salvador", "Correos de El Salvador"];
+/** Causas de devolución que acepta el OMS (ver /politicas/devoluciones). */
+export const RETURN_REASONS = ["Producto defectuoso", "Producto equivocado", "Llegó dañado", "Cliente se arrepintió"] as const;
+
 export const PAYMENT_METHODS: Record<Channel, { id: string; label: string; hint: string }[]> = {
   B2C: [
     { id: "tarjeta", label: "Tarjeta de crédito o débito", hint: "Pago inmediato (simulado)" },

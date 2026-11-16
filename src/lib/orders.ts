@@ -2,7 +2,7 @@ import "server-only";
 import type { DbClient } from "./db";
 import { query, tx } from "./db";
 import {
-  B2B_MIN_ORDER, B2C_FREE_SHIPPING_FROM, B2C_MIN_ORDER, B2C_SHIPPING, PAYMENT_METHODS, type Channel,
+  B2B_MIN_ORDER, B2C_FREE_SHIPPING_FROM, B2C_MIN_ORDER, B2C_SHIPPING, CARRIERS, PAYMENT_METHODS, PROMISE_DAYS, type Channel,
 } from "./shared";
 
 export type OrderInput = {
@@ -20,10 +20,6 @@ export type OrderInput = {
 
 export class OrderError extends Error {}
 
-const CARRIERS = ["C807 Xpress", "Urbano Express", "DHL El Salvador", "Correos de El Salvador"];
-
-/** Días prometidos de entrega según el canal. */
-const PROMISE_DAYS: Record<Channel, number> = { B2C: 3, B2B: 5 };
 
 function paymentStatus(method: string): string {
   switch (method) {
