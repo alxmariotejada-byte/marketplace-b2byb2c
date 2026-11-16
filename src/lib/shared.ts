@@ -26,13 +26,13 @@ export function money(n: number | string | null | undefined): string {
 }
 
 const CATEGORY_STYLES: { match: RegExp; icon: string; bg: string; fg: string }[] = [
-  { match: /electr/i, icon: "💻", bg: "#e0ecff", fg: "#1d4ed8" },
-  { match: /ropa|accesor/i, icon: "👕", bg: "#fde7ef", fg: "#be185d" },
-  { match: /aliment|bebida/i, icon: "🥫", bg: "#fff1d6", fg: "#b45309" },
-  { match: /ferret|industr/i, icon: "🔧", bg: "#e7e9ee", fg: "#374151" },
-  { match: /hogar|decor/i, icon: "🛋️", bg: "#e3f6ec", fg: "#047857" },
-  { match: /salud|cuidado/i, icon: "💊", bg: "#e6f6f8", fg: "#0e7490" },
-  { match: /servicio|digital/i, icon: "☁️", bg: "#efe8ff", fg: "#6d28d9" },
+  { match: /electr/i, icon: "💻", bg: "#dfe8f6", fg: "#0b3d91" },
+  { match: /ropa|accesor/i, icon: "👕", bg: "#f4e3e6", fg: "#9b2c45" },
+  { match: /aliment|bebida/i, icon: "🥫", bg: "#f6ead3", fg: "#8a5a12" },
+  { match: /ferret|industr/i, icon: "🔧", bg: "#e4e6ea", fg: "#38404d" },
+  { match: /hogar|decor/i, icon: "🛋️", bg: "#dcefe7", fg: "#1f6b55" },
+  { match: /salud|cuidado/i, icon: "💊", bg: "#dcf0f2", fg: "#16697a" },
+  { match: /servicio|digital/i, icon: "☁️", bg: "#e7e3f5", fg: "#4c3d8f" },
 ];
 
 export function categoryStyle(category: string) {

@@ -46,8 +46,8 @@ export default async function Inventario({ searchParams }: PageProps<"/admin/inv
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Inventario (ERP)</h1>
-        <p className="text-sm text-slate-500">Stock en tiempo real: se descuenta con cada venta y se repone con devoluciones, cancelaciones y recepciones.</p>
+        <h1 className="ancho text-2xl font-bold">Inventario (ERP)</h1>
+        <p className="text-sm text-gris">Stock en tiempo real: se descuenta con cada venta y se repone con devoluciones, cancelaciones y recepciones.</p>
       </div>
       {typeof sp.ok === "string" && <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">{sp.ok}</p>}
       {typeof sp.error === "string" && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{sp.error}</p>}
@@ -60,10 +60,10 @@ export default async function Inventario({ searchParams }: PageProps<"/admin/inv
           ["Alertas de stock mínimo", `${t.alerts}`, "Requieren reposición"],
           ["Agotados", `${t.out}`, "Stock en cero"],
         ].map(([a, b, c]) => (
-          <div key={a} className="rounded-2xl bg-white p-4 shadow-sm">
-            <p className="text-xs text-slate-500">{a}</p>
+          <div key={a} className="rounded-lg border border-linea bg-white p-4">
+            <p className="text-xs text-gris">{a}</p>
             <p className="mt-1 text-xl font-bold">{b}</p>
-            <p className="text-xs text-slate-400">{c}</p>
+            <p className="text-xs text-gris">{c}</p>
           </div>
         ))}
       </div>
@@ -71,15 +71,15 @@ export default async function Inventario({ searchParams }: PageProps<"/admin/inv
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <section>
           <form className="flex flex-wrap gap-2 text-sm">
-            <input name="q" defaultValue={q} placeholder="Buscar por nombre, SKU o proveedor" className="flex-1 rounded-lg border border-slate-300 px-3 py-2" />
-            <label className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3">
+            <input name="q" defaultValue={q} placeholder="Buscar por nombre, SKU o proveedor" className="flex-1 rounded-lg border border-linea px-3 py-2" />
+            <label className="flex items-center gap-2 rounded-lg border border-linea bg-white px-3">
               <input type="checkbox" name="alerta" value="1" defaultChecked={alerta} /> Solo alertas
             </label>
-            <button className="rounded-lg bg-slate-800 px-4 py-2 font-semibold text-white">Filtrar</button>
+            <button className="rounded-lg bg-tinta px-4 py-2 font-semibold text-white">Filtrar</button>
           </form>
-          <div className="mt-3 overflow-x-auto rounded-2xl bg-white shadow-sm">
+          <div className="mt-3 overflow-x-auto rounded-lg border border-linea bg-white">
             <table className="w-full text-sm">
-              <thead className="bg-slate-100 text-left text-xs uppercase text-slate-500">
+              <thead className="bg-papel text-left text-xs uppercase text-gris">
                 <tr>
                   <th className="p-3">SKU</th><th className="p-3">Producto</th><th className="p-3">Stock</th><th className="p-3">Mín.</th>
                   <th className="p-3">B2C / B2B</th><th className="p-3">Recepción / ajuste</th>
@@ -92,24 +92,24 @@ export default async function Inventario({ searchParams }: PageProps<"/admin/inv
                     <tr key={r.sku} className={`border-t ${low ? "bg-amber-50" : ""}`}>
                       <td className="p-3 font-mono text-xs">{r.sku}</td>
                       <td className="p-3">
-                        <Link href={`/producto/${r.sku}`} className="font-medium hover:text-blue-700">{r.name}</Link>
-                        <p className="text-xs text-slate-500">{r.category} · {r.supplier}{r.status !== "Activo" && " · Inactivo"}</p>
+                        <Link href={`/producto/${r.sku}`} className="font-medium hover:text-azul">{r.name}</Link>
+                        <p className="text-xs text-gris">{r.category} · {r.supplier}{r.status !== "Activo" && " · Inactivo"}</p>
                       </td>
                       <td className={`p-3 font-bold ${r.stock === 0 ? "text-red-600" : low ? "text-amber-700" : ""}`}>
                         {r.stock}{low && " ⚠️"}
                       </td>
-                      <td className="p-3 text-slate-500">{r.stock_min}</td>
+                      <td className="p-3 text-gris">{r.stock_min}</td>
                       <td className="p-3 whitespace-nowrap">{money(r.price_b2c)} / {money(r.price_b2b)}</td>
                       <td className="p-3">
                         <form action={adjustStock} className="flex gap-1">
                           <input type="hidden" name="sku" value={r.sku} />
                           <input type="hidden" name="back" value={back} />
-                          <input name="qty" type="number" required placeholder="+/-" className="w-20 rounded-lg border border-slate-300 px-2 py-1 text-xs" />
-                          <select name="type" className="rounded-lg border border-slate-300 px-1 text-xs">
+                          <input name="qty" type="number" required placeholder="+/-" className="w-20 rounded-lg border border-linea px-2 py-1 text-xs" />
+                          <select name="type" className="rounded-lg border border-linea px-1 text-xs">
                             <option value="ENTRADA_COMPRA">Recepción OC</option>
                             <option value="AJUSTE">Ajuste</option>
                           </select>
-                          <button className="rounded-lg bg-slate-800 px-2 py-1 text-xs text-white">OK</button>
+                          <button className="rounded-lg bg-tinta px-2 py-1 text-xs text-white">OK</button>
                         </form>
                       </td>
                     </tr>
@@ -120,30 +120,30 @@ export default async function Inventario({ searchParams }: PageProps<"/admin/inv
           </div>
           <nav className="mt-4 flex items-center justify-center gap-2 text-sm">
             {page > 1 && <Link href={qs(page - 1)} className="rounded-lg border bg-white px-3 py-1.5">← Anterior</Link>}
-            <span className="text-slate-500">Página {page} de {pages} · {count.n} productos</span>
+            <span className="text-gris">Página {page} de {pages} · {count.n} productos</span>
             {page < pages && <Link href={qs(page + 1)} className="rounded-lg border bg-white px-3 py-1.5">Siguiente →</Link>}
           </nav>
         </section>
 
         <aside className="space-y-4">
-          <section className="rounded-2xl bg-white p-5 shadow-sm">
+          <section className="rounded-lg border border-linea bg-white p-5">
             <h2 className="font-semibold">Carga masiva de catálogo</h2>
-            <p className="mb-3 mt-1 text-xs text-slate-500">
+            <p className="mb-3 mt-1 text-xs text-gris">
               Sube el Excel “Catalogo_500_Productos.xlsx” o un CSV. Los SKUs nuevos se crean con su stock inicial; en los existentes se actualizan datos y precios, y se conserva el stock real.
             </p>
             <ImportForm />
           </section>
-          <section className="rounded-2xl bg-white p-5 shadow-sm">
+          <section className="rounded-lg border border-linea bg-white p-5">
             <h2 className="font-semibold">Stock por categoría</h2>
             <ul className="mt-2 space-y-1 text-sm">
               {byCat.map((c) => (
-                <li key={c.category} className="flex justify-between"><span>{c.category}</span><span className="text-slate-500">{c.skus} SKUs · {c.units} u.</span></li>
+                <li key={c.category} className="flex justify-between"><span>{c.category}</span><span className="text-gris">{c.skus} SKUs · {c.units} u.</span></li>
               ))}
             </ul>
           </section>
-          <section className="rounded-2xl bg-white p-5 shadow-sm">
+          <section className="rounded-lg border border-linea bg-white p-5">
             <h2 className="font-semibold">Últimos movimientos</h2>
-            {moves.length === 0 && <p className="mt-2 text-sm text-slate-500">Sin movimientos aún.</p>}
+            {moves.length === 0 && <p className="mt-2 text-sm text-gris">Sin movimientos aún.</p>}
             <ul className="mt-2 space-y-1 text-xs">
               {moves.map((m, i) => (
                 <li key={i} className="flex justify-between gap-2">

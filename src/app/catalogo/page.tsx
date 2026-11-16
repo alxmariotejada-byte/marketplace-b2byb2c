@@ -41,24 +41,24 @@ export default async function Catalogo({ searchParams }: { searchParams: Promise
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6">
-      <h1 className="text-2xl font-bold">
+      <h1 className="ancho text-2xl font-bold">
         {f.q ? `Resultados para “${f.q}”` : f.cat || "Todo el catálogo"}
       </h1>
-      <p className="text-sm text-slate-500">
-        {result.total} productos · precios {mode === "B2B" ? "mayoristas B2B" : "para personas (B2C)"}
+      <p className="text-sm text-gris">
+        {result.total} productos, con {mode === "B2B" ? "precios de empresa" : "precios para personas"}
       </p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[260px_1fr]">
         {/* Filtros */}
         <aside>
-          <form action="/catalogo" className="space-y-5 rounded-2xl border border-slate-200 bg-white p-4 text-sm">
+          <form action="/catalogo" className="space-y-5 rounded-lg border border-linea bg-white p-4 text-sm">
             <div>
               <label className="font-semibold" htmlFor="q">Buscar</label>
-              <input id="q" name="q" defaultValue={f.q} placeholder="Nombre o SKU" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" />
+              <input id="q" name="q" defaultValue={f.q} placeholder="Nombre o SKU" className="mt-1 w-full rounded-lg border border-linea px-3 py-2" />
             </div>
             <div>
               <label className="font-semibold" htmlFor="cat">Categoría</label>
-              <select id="cat" name="cat" defaultValue={f.cat} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+              <select id="cat" name="cat" defaultValue={f.cat} className="mt-1 w-full rounded-lg border border-linea px-3 py-2">
                 <option value="">Todas</option>
                 {cats.map((c) => (
                   <option key={c.category} value={c.category}>{c.category} ({c.n})</option>
@@ -68,17 +68,17 @@ export default async function Catalogo({ searchParams }: { searchParams: Promise
             {subs.length > 0 && (
               <div>
                 <label className="font-semibold" htmlFor="sub">Subcategoría</label>
-                <select id="sub" name="sub" defaultValue={f.sub} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                <select id="sub" name="sub" defaultValue={f.sub} className="mt-1 w-full rounded-lg border border-linea px-3 py-2">
                   <option value="">Todas</option>
                   {subs.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
             )}
             <div>
-              <span className="font-semibold">Precio ({mode})</span>
+              <span className="font-semibold">Precio</span>
               <div className="mt-1 flex gap-2">
-                <input name="min" type="number" min={0} step="0.01" defaultValue={f.min} placeholder="Mín $" className="w-full rounded-lg border border-slate-300 px-3 py-2" />
-                <input name="max" type="number" min={0} step="0.01" defaultValue={f.max} placeholder="Máx $" className="w-full rounded-lg border border-slate-300 px-3 py-2" />
+                <input name="min" type="number" min={0} step="0.01" defaultValue={f.min} placeholder="Mín $" className="w-full rounded-lg border border-linea px-3 py-2" />
+                <input name="max" type="number" min={0} step="0.01" defaultValue={f.max} placeholder="Máx $" className="w-full rounded-lg border border-linea px-3 py-2" />
               </div>
             </div>
             <label className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export default async function Catalogo({ searchParams }: { searchParams: Promise
             </label>
             <div>
               <label className="font-semibold" htmlFor="orden">Ordenar por</label>
-              <select id="orden" name="orden" defaultValue={f.orden} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+              <select id="orden" name="orden" defaultValue={f.orden} className="mt-1 w-full rounded-lg border border-linea px-3 py-2">
                 <option value="">Relevancia</option>
                 <option value="precio_asc">Precio: menor a mayor</option>
                 <option value="precio_desc">Precio: mayor a menor</option>
@@ -96,15 +96,15 @@ export default async function Catalogo({ searchParams }: { searchParams: Promise
               </select>
             </div>
             <div className="flex gap-2">
-              <button className="flex-1 rounded-lg bg-blue-700 py-2 font-semibold text-white hover:bg-blue-800">Aplicar</button>
-              <Link href="/catalogo" className="rounded-lg border border-slate-300 px-3 py-2 text-slate-600 hover:bg-slate-50">Limpiar</Link>
+              <button className="flex-1 rounded-lg bg-azul py-2 font-semibold text-white hover:bg-azul-oscuro">Aplicar</button>
+              <Link href="/catalogo" className="rounded-lg border border-linea px-3 py-2 text-gris hover:bg-papel">Limpiar</Link>
             </div>
           </form>
         </aside>
 
         <section>
           {result.rows.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+            <div className="rounded-lg border border-dashed border-linea bg-white p-10 text-center text-gris">
               No encontramos productos con esos filtros.
             </div>
           ) : (
@@ -115,11 +115,11 @@ export default async function Catalogo({ searchParams }: { searchParams: Promise
           {result.pages > 1 && (
             <nav className="mt-8 flex items-center justify-center gap-2 text-sm">
               {result.page > 1 && (
-                <Link href={link({ page: String(result.page - 1) })} className="rounded-lg border border-slate-300 bg-white px-3 py-2 hover:bg-slate-50">← Anterior</Link>
+                <Link href={link({ page: String(result.page - 1) })} className="rounded-lg border border-linea bg-white px-3 py-2 hover:bg-papel">← Anterior</Link>
               )}
-              <span className="px-3 text-slate-500">Página {result.page} de {result.pages}</span>
+              <span className="px-3 text-gris">Página {result.page} de {result.pages}</span>
               {result.page < result.pages && (
-                <Link href={link({ page: String(result.page + 1) })} className="rounded-lg border border-slate-300 bg-white px-3 py-2 hover:bg-slate-50">Siguiente →</Link>
+                <Link href={link({ page: String(result.page + 1) })} className="rounded-lg border border-linea bg-white px-3 py-2 hover:bg-papel">Siguiente →</Link>
               )}
             </nav>
           )}

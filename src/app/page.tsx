@@ -1,112 +1,203 @@
 import Link from "next/link";
 import { getMode } from "@/lib/session";
 import { getBestSellers, getCategories, getFeatured } from "@/lib/products";
-import { categoryStyle } from "@/lib/shared";
+import { B2B_MIN_ORDER, B2C_FREE_SHIPPING_FROM, categoryStyle, money } from "@/lib/shared";
 import { ProductCard } from "@/components/product-card";
+import { Barcode } from "@/components/barcode";
+
+function addBusinessDays(d: Date, n: number) {
+  const out = new Date(d);
+  while (n > 0) {
+    out.setDate(out.getDate() + 1);
+    if (out.getDay() !== 0 && out.getDay() !== 6) n--;
+  }
+  return out;
+}
+
+const label = (c: string) => (c === "Ferreteria" ? "Ferretería" : c === "Servicios Digitales" ? "Servicios digitales" : c);
 
 export default async function Home() {
   const mode = await getMode();
   const [cats, featured, best] = await Promise.all([getCategories(), getFeatured(8), getBestSellers(4)]);
   const total = cats.reduce((s, c) => s + c.n, 0);
+  const now = new Date();
+  const eta = addBusinessDays(now, mode === "B2B" ? 5 : 3).toLocaleDateString("es-SV", {
+    weekday: "long", day: "numeric", month: "long", timeZone: "America/El_Salvador",
+  });
+  const guide = `74${now.getFullYear() % 100}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}0315`;
+  const compare = featured.filter((p) => p.price_b2c > p.price_b2b).slice(0, 4);
 
   return (
-    <div className="mx-auto max-w-7xl px-4">
-      {/* Banners destacados */}
-      <section className="mt-6 grid gap-4 lg:grid-cols-3">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-700 to-blue-900 p-8 text-white lg:col-span-2">
-          <p className="text-sm font-semibold uppercase tracking-wider text-blue-200">Temporada alta · Nov – Ene</p>
-          <h1 className="mt-2 max-w-lg text-3xl font-black leading-tight sm:text-4xl">
-            Todo lo que necesitas, entregado en todo El Salvador
-          </h1>
-          <p className="mt-3 max-w-md text-blue-100">
-            {total} productos de 150 vendedores. Compra desde $5 y recibe en 3 días hábiles con seguimiento en tiempo real.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/catalogo" className="rounded-full bg-orange-500 px-6 py-3 font-semibold hover:bg-orange-600">
-              Ver catálogo
-            </Link>
-            <Link href="/catalogo?cat=Electr%C3%B3nica" className="rounded-full bg-white/15 px-6 py-3 font-semibold hover:bg-white/25">
-              Ofertas en electrónica
-            </Link>
-          </div>
-          <span className="pointer-events-none absolute -bottom-6 -right-4 text-[10rem] opacity-20">📦</span>
-        </div>
-        <div className="flex flex-col gap-4">
-          <div className="flex-1 rounded-3xl bg-slate-900 p-6 text-white">
-            <p className="text-xs font-semibold uppercase tracking-wider text-orange-400">Para empresas</p>
-            <h2 className="mt-1 text-xl font-bold">Precios mayoristas B2B</h2>
-            <p className="mt-1 text-sm text-slate-300">Hasta 20% menos, crédito a 30 días y factura de crédito fiscal. Compra mínima $500.</p>
-            {mode === "B2C" ? (
-              <p className="mt-3 text-sm font-semibold text-orange-300">Activa “Empresas B2B” arriba para ver tus precios.</p>
-            ) : (
-              <p className="mt-3 text-sm font-semibold text-emerald-300">✓ Estás viendo precios B2B</p>
-            )}
-          </div>
-          <div className="flex-1 rounded-3xl bg-orange-100 p-6">
-            <p className="text-xs font-semibold uppercase tracking-wider text-orange-700">Envío gratis</p>
-            <h2 className="mt-1 text-xl font-bold text-slate-900">En compras desde $50</h2>
-            <p className="mt-1 text-sm text-slate-700">Paga con tarjeta, transferencia o contra entrega.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Categorías */}
-      <section className="mt-12">
-        <h2 className="text-2xl font-bold">Compra por categoría</h2>
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-          {cats.map((c) => {
-            const s = categoryStyle(c.category);
-            return (
-              <Link
-                key={c.category}
-                href={`/catalogo?cat=${encodeURIComponent(c.category)}`}
-                className="rounded-2xl p-4 text-center transition hover:-translate-y-0.5 hover:shadow"
-                style={{ background: s.bg, color: s.fg }}
-              >
-                <div className="text-4xl">{s.icon}</div>
-                <p className="mt-2 text-sm font-semibold">{c.category === "Ferreteria" ? "Ferretería" : c.category}</p>
-                <p className="text-xs opacity-75">{c.n} productos</p>
+    <div>
+      {/* Portada: la promesa de entrega contada como una guía de envío */}
+      <section className="bg-azul text-white">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-12 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <h1 className="display max-w-xl text-5xl sm:text-6xl">
+              {mode === "B2B" ? "Del clic a tu negocio en 5 días." : "Del clic a tu puerta en 3 días."}
+            </h1>
+            <p className="mt-6 max-w-lg text-lg text-white/85">
+              {total} productos de vendedores salvadoreños, con el stock al día y seguimiento de tu pedido en cada paso.
+              Compras desde $5 y el envío es gratis desde {money(B2C_FREE_SHIPPING_FROM)}.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/catalogo" className="rounded-md bg-senal px-6 py-3 font-bold text-tinta hover:bg-senal-oscuro">
+                Ver el catálogo
               </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      {best.length > 0 && (
-        <section className="mt-12">
-          <h2 className="text-2xl font-bold">Más vendidos</h2>
-          <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {best.map((p) => <ProductCard key={p.sku} p={p} mode={mode} />)}
-          </div>
-        </section>
-      )}
-
-      <section className="mt-12">
-        <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-bold">Productos destacados</h2>
-          <Link href="/catalogo" className="text-sm font-semibold text-blue-700 hover:underline">Ver todos →</Link>
-        </div>
-        <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-          {featured.map((p) => <ProductCard key={p.sku} p={p} mode={mode} />)}
-        </div>
-      </section>
-
-      <section className="mt-12 grid gap-4 rounded-3xl bg-white p-6 text-sm shadow-sm sm:grid-cols-4">
-        {[
-          ["🚚", "Entrega en 3 días", "A todo El Salvador"],
-          ["📍", "Rastreo en tiempo real", "Del clic a tu puerta"],
-          ["🔒", "Pago seguro", "3 métodos de pago"],
-          ["↩️", "Devoluciones fáciles", "Reembolso garantizado"],
-        ].map(([i, t, d]) => (
-          <div key={t} className="flex items-center gap-3">
-            <span className="text-3xl">{i}</span>
-            <div>
-              <p className="font-semibold">{t}</p>
-              <p className="text-slate-500">{d}</p>
+              <Link href="/pedido" className="rounded-md border border-white/40 px-6 py-3 font-semibold hover:bg-white/10">
+                Rastrear un pedido
+              </Link>
             </div>
           </div>
-        ))}
+
+          <div className="relative mx-auto w-full max-w-md px-2 sm:px-0">
+            <div className="etiqueta-entrada rotate-[-1.5deg] rounded-sm bg-white text-tinta shadow-[0_18px_40px_-12px_rgba(0,0,0,0.45)]">
+              <div className="cinta absolute -top-3 left-1/2 h-7 w-32 -translate-x-1/2 rotate-[2deg] opacity-90" aria-hidden />
+              <div className="flex items-center justify-between border-b-2 border-tinta px-5 py-3">
+                <span className="display text-lg">LOGIMKT</span>
+                <span className="text-sm font-semibold">Guía de envío</span>
+              </div>
+              <dl className="grid grid-cols-2 border-b border-linea text-sm">
+                <div className="border-r border-linea px-5 py-3">
+                  <dt className="text-xs text-gris">Sale de</dt>
+                  <dd className="font-semibold">Bodega central, San Salvador</dd>
+                </div>
+                <div className="px-5 py-3">
+                  <dt className="text-xs text-gris">Llega a</dt>
+                  <dd className="font-semibold">{mode === "B2B" ? "Tu negocio" : "Tu casa"}, en todo el país</dd>
+                </div>
+              </dl>
+              <ol className="space-y-2.5 px-5 py-4 text-sm" aria-label="Recorrido de un pedido">
+                {[
+                  ["Haces clic en comprar", "done"],
+                  ["Reservamos tu stock en el acto", "done"],
+                  ["Preparamos y empacamos", "now"],
+                  ["Sale con transportista y número de guía", "next"],
+                  [`Llega el ${eta}`, "next"],
+                ].map(([t, st]) => (
+                  <li key={t} className="flex items-center gap-3">
+                    <span
+                      className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 text-[10px] font-bold ${
+                        st === "done" ? "border-azul bg-azul text-white" : st === "now" ? "border-azul bg-senal" : "border-linea"
+                      }`}
+                      aria-hidden
+                    >
+                      {st === "done" ? "✓" : ""}
+                    </span>
+                    <span className={st === "next" ? "text-gris" : "font-medium"}>{t}</span>
+                  </li>
+                ))}
+              </ol>
+              <div className="flex items-end justify-between gap-4 border-t-2 border-dashed border-linea px-5 py-4">
+                <Barcode code={guide} className="h-14 w-44 text-tinta" />
+                <p className="text-right text-xs text-gris">
+                  Entrega prometida
+                  <span className="ancho block text-2xl font-extrabold text-tinta">{mode === "B2B" ? "5" : "3"} días</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
+
+      <div className="mx-auto max-w-7xl px-4">
+        {/* Categorías */}
+        <section className="mt-12" aria-labelledby="cat-title">
+          <h2 id="cat-title" className="ancho text-2xl font-bold">Compra por categoría</h2>
+          <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+            {cats.map((c) => {
+              const s = categoryStyle(c.category);
+              return (
+                <Link
+                  key={c.category}
+                  href={`/catalogo?cat=${encodeURIComponent(c.category)}`}
+                  className="flex items-center gap-3 rounded-md px-3 py-3 transition-[filter] hover:brightness-95"
+                  style={{ background: s.bg, color: s.fg }}
+                >
+                  <span className="text-3xl" aria-hidden>{s.icon}</span>
+                  <span>
+                    <span className="block text-sm font-bold leading-tight">{label(c.category)}</span>
+                    <span className="text-xs opacity-80">{c.n} productos</span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {best.length > 0 && (
+          <section className="mt-14" aria-labelledby="best-title">
+            <h2 id="best-title" className="ancho text-2xl font-bold">Lo que más se está vendiendo</h2>
+            <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
+              {best.map((p) => <ProductCard key={p.sku} p={p} mode={mode} />)}
+            </div>
+          </section>
+        )}
+
+        <section className="mt-14" aria-labelledby="feat-title">
+          <div className="flex items-end justify-between gap-4">
+            <h2 id="feat-title" className="ancho text-2xl font-bold">Con existencias para entrega inmediata</h2>
+            <Link href="/catalogo?disp=1" className="shrink-0 text-sm font-semibold text-azul hover:underline">Ver todos</Link>
+          </div>
+          <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
+            {featured.map((p) => <ProductCard key={p.sku} p={p} mode={mode} />)}
+          </div>
+        </section>
+
+        {/* Empresas: comparación real de precios del catálogo */}
+        <section className="mt-16 grid overflow-hidden rounded-lg bg-tinta text-white lg:grid-cols-[1fr_1.2fr]" aria-labelledby="b2b-title">
+          <div className="p-8 sm:p-10">
+            <h2 id="b2b-title" className="display text-3xl">Si compras para tu negocio, pagas precio de mayoreo.</h2>
+            <p className="mt-4 max-w-md text-white/80">
+              Cambia a “Mi empresa” arriba y verás los precios B2B en todo el catálogo. Pedido mínimo de {money(B2B_MIN_ORDER)},
+              pago con crédito a 30 días, transferencia o tarjeta corporativa.
+            </p>
+            {mode === "B2C" ? (
+              <p className="mt-6 inline-block rounded-md bg-senal px-4 py-2 text-sm font-bold text-tinta">Usa el botón “Mi empresa” del encabezado</p>
+            ) : (
+              <p className="mt-6 text-sm font-semibold text-senal">Ya estás viendo precios de empresa.</p>
+            )}
+          </div>
+          <div className="bg-white/5 p-8 sm:p-10">
+            <table className="w-full text-sm">
+              <caption className="mb-3 text-left text-white/70">Ejemplos del catálogo de hoy</caption>
+              <thead>
+                <tr className="border-b border-white/20 text-left text-white/60">
+                  <th className="py-2 font-medium">Producto</th>
+                  <th className="py-2 text-right font-medium">Personas</th>
+                  <th className="py-2 text-right font-medium">Empresas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {compare.map((p) => (
+                  <tr key={p.sku} className="border-b border-white/10">
+                    <td className="py-3 pr-3">
+                      <Link href={`/producto/${p.sku}`} className="hover:underline">{p.name}</Link>
+                    </td>
+                    <td className="py-3 text-right text-white/60">{money(p.price_b2c)}</td>
+                    <td className="ancho py-3 text-right font-bold text-senal">{money(p.price_b2b)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="mt-14 grid gap-6 border-t border-linea pt-10 text-sm sm:grid-cols-3" aria-label="Cómo compras con nosotros">
+          <div>
+            <p className="font-bold">Pagas como prefieras</p>
+            <p className="mt-1 text-gris">Tarjeta, transferencia bancaria o efectivo al recibir. Las empresas también pueden pagar a 30 días.</p>
+          </div>
+          <div>
+            <p className="font-bold">Sabes dónde va tu pedido</p>
+            <p className="mt-1 text-gris">Recibes un número de pedido y una guía de envío para seguirlo desde la bodega hasta tu puerta.</p>
+          </div>
+          <div>
+            <p className="font-bold">Si algo falla, lo devuelves</p>
+            <p className="mt-1 text-gris">Registramos la devolución, el producto vuelve a bodega y te reembolsamos.</p>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { getOrder } from "@/lib/orders";
 import { ORDER_FLOW, PAYMENT_METHODS, money, statusColor } from "@/lib/shared";
 import { submitNps } from "@/app/actions";
+import { Barcode } from "@/components/barcode";
+
+const guideDigits = (t: string) => t.replace(/\D/g, "").padEnd(12, "0").slice(0, 12);
 
 const dt = (d: Date | null) =>
   d ? new Date(d).toLocaleString("es-SV", { dateStyle: "medium", timeStyle: "short", timeZone: "America/El_Salvador" }) : "—";
@@ -20,7 +23,7 @@ export default async function PedidoPage({ params, searchParams }: PageProps<"/p
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
       {sp.nuevo && (
-        <div className="mb-6 rounded-2xl bg-emerald-50 p-5 text-emerald-900">
+        <div className="mb-6 rounded-lg border-2 border-ok bg-white p-5">
           <p className="text-lg font-bold">¡Gracias por tu compra! 🎉</p>
           <p className="text-sm">
             Tu pedido <strong>{o.code}</strong> fue confirmado y el inventario quedó reservado. Guarda este número para rastrearlo.
@@ -32,8 +35,8 @@ export default async function PedidoPage({ params, searchParams }: PageProps<"/p
       )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Pedido {o.code}</h1>
-          <p className="text-sm text-slate-500">Realizado el {dt(o.created_at)} · Cliente {o.channel}</p>
+          <h1 className="ancho text-2xl font-bold">Pedido {o.code}</h1>
+          <p className="text-sm text-gris">Hecho el {dt(o.created_at)}, {o.channel === "B2B" ? "compra de empresa" : "compra personal"}</p>
         </div>
         <span className={`rounded-full px-4 py-1.5 text-sm font-semibold ${statusColor(o.status)}`}>{o.status}</span>
       </div>
@@ -43,10 +46,10 @@ export default async function PedidoPage({ params, searchParams }: PageProps<"/p
         <ol className="mt-6 grid grid-cols-3 gap-2 sm:grid-cols-6">
           {ORDER_FLOW.map((s, i) => (
             <li key={s} className="text-center">
-              <div className={`mx-auto flex size-9 items-center justify-center rounded-full text-sm font-bold ${i <= stepIdx ? "bg-blue-700 text-white" : "bg-slate-200 text-slate-500"}`}>
+              <div className={`mx-auto flex size-9 items-center justify-center rounded-full text-sm font-bold ${i <= stepIdx ? "bg-azul text-white" : "bg-linea text-gris"}`}>
                 {i < stepIdx ? "✓" : i + 1}
               </div>
-              <p className={`mt-1 text-xs ${i <= stepIdx ? "font-semibold text-slate-900" : "text-slate-400"}`}>{s}</p>
+              <p className={`mt-1 text-xs ${i <= stepIdx ? "font-semibold text-tinta" : "text-gris"}`}>{s}</p>
             </li>
           ))}
         </ol>
@@ -54,37 +57,43 @@ export default async function PedidoPage({ params, searchParams }: PageProps<"/p
 
       <div className="mt-8 grid gap-6 md:grid-cols-[1fr_320px]">
         <div className="space-y-6">
-          <section className="rounded-2xl bg-white p-5 shadow-sm">
+          <section className="rounded-lg border border-linea bg-white p-5">
             <h2 className="font-semibold">Seguimiento</h2>
             {o.tracking && (
-              <p className="mt-2 rounded-lg bg-indigo-50 p-3 text-sm text-indigo-900">
-                Transportista: <strong>{o.carrier}</strong> · Guía: <strong>{o.tracking}</strong>
-              </p>
+              <div className="mt-3 flex items-center justify-between gap-4 rounded-md border-2 border-tinta bg-white p-4 text-sm">
+                <div>
+                  <p className="text-xs text-gris">Transportista</p>
+                  <p className="font-bold">{o.carrier}</p>
+                  <p className="mt-2 text-xs text-gris">Número de guía</p>
+                  <p className="ancho font-bold">{o.tracking}</p>
+                </div>
+                <Barcode code={guideDigits(o.tracking)} className="h-14 w-40 text-tinta" showText={false} />
+              </div>
             )}
-            <ul className="mt-3 space-y-3 border-l-2 border-slate-200 pl-4">
+            <ul className="mt-3 space-y-3 border-l-2 border-linea pl-4">
               {[...events].reverse().map((e, i) => (
                 <li key={i} className="relative">
-                  <span className="absolute -left-[1.4rem] top-1 size-3 rounded-full bg-blue-700" />
+                  <span className="absolute -left-[1.4rem] top-1 size-3 rounded-md bg-azul" />
                   <p className="text-sm font-semibold">{e.status}</p>
-                  <p className="text-xs text-slate-500">{dt(e.created_at)}</p>
-                  {e.note && <p className="text-sm text-slate-600">{e.note}</p>}
+                  <p className="text-xs text-gris">{dt(e.created_at)}</p>
+                  {e.note && <p className="text-sm text-gris">{e.note}</p>}
                 </li>
               ))}
             </ul>
           </section>
-          <section className="rounded-2xl bg-white p-5 shadow-sm">
+          <section className="rounded-lg border border-linea bg-white p-5">
             <h2 className="font-semibold">Productos</h2>
             <table className="mt-3 w-full text-sm">
               <tbody>
                 {items.map((it) => (
                   <tr key={it.sku} className="border-b last:border-0">
                     <td className="py-2">
-                      <Link href={`/producto/${it.sku}`} className="hover:text-blue-700">{it.name}</Link>
+                      <Link href={`/producto/${it.sku}`} className="hover:text-azul">{it.name}</Link>
                       {it.qty < it.qty_requested && (
                         <span className="block text-xs text-amber-700">Solicitado {it.qty_requested}, surtido {it.qty}</span>
                       )}
                     </td>
-                    <td className="py-2 text-right text-slate-500">{it.qty} × {money(it.unit_price)}</td>
+                    <td className="py-2 text-right text-gris">{it.qty} × {money(it.unit_price)}</td>
                     <td className="py-2 text-right font-medium">{money(it.line_total)}</td>
                   </tr>
                 ))}
@@ -94,40 +103,40 @@ export default async function PedidoPage({ params, searchParams }: PageProps<"/p
         </div>
 
         <aside className="space-y-4">
-          <section className="rounded-2xl bg-white p-5 text-sm shadow-sm">
+          <section className="rounded-lg bg-white p-5 text-sm shadow-sm">
             <h2 className="font-semibold">Resumen</h2>
             <dl className="mt-2 space-y-1">
               <div className="flex justify-between"><dt>Subtotal</dt><dd>{money(o.subtotal)}</dd></div>
               <div className="flex justify-between"><dt>Envío</dt><dd>{o.shipping_charge > 0 ? money(o.shipping_charge) : "Gratis"}</dd></div>
               <div className="flex justify-between font-bold"><dt>Total</dt><dd>{money(o.total)}</dd></div>
             </dl>
-            <p className="mt-3 text-slate-600">Pago: {method}</p>
-            <p className="text-slate-600">Estado del pago: {o.payment_status}</p>
-            <p className="mt-3 text-slate-600">Entregar a: {o.company ? `${o.company} · ` : ""}{o.customer_name}</p>
-            <p className="text-slate-600">{o.address}, {o.city}</p>
-            <p className="mt-3 text-slate-600">Entrega prometida: <strong>{dt(o.promised_at)}</strong></p>
-            {o.delivered_at && <p className="text-slate-600">Entregado: <strong>{dt(o.delivered_at)}</strong></p>}
+            <p className="mt-3 text-gris">Pago: {method}</p>
+            <p className="text-gris">Estado del pago: {o.payment_status}</p>
+            <p className="mt-3 text-gris">Entregar a {o.company ? `${o.company}, ` : ""}{o.customer_name}</p>
+            <p className="text-gris">{o.address}, {o.city}</p>
+            <p className="mt-3 text-gris">Entrega prometida: <strong>{dt(o.promised_at)}</strong></p>
+            {o.delivered_at && <p className="text-gris">Entregado: <strong>{dt(o.delivered_at)}</strong></p>}
           </section>
 
           {canRate && (
-            <section className="rounded-2xl bg-white p-5 text-sm shadow-sm">
+            <section className="rounded-lg bg-white p-5 text-sm shadow-sm">
               <h2 className="font-semibold">Encuesta de satisfacción</h2>
               {o.nps_score !== null || sp.encuesta ? (
                 <p className="mt-2 text-emerald-700">¡Gracias! Tu respuesta nos ayuda a mejorar.</p>
               ) : (
                 <form action={submitNps} className="mt-2 space-y-3">
                   <input type="hidden" name="code" value={o.code} />
-                  <p className="text-slate-600">Del 0 al 10, ¿qué tan probable es que recomiendes LOGIMKT a un amigo?</p>
+                  <p className="text-gris">Del 0 al 10, ¿qué tan probable es que recomiendes LOGIMKT a un amigo?</p>
                   <div className="grid grid-cols-11 gap-1">
                     {Array.from({ length: 11 }, (_, n) => (
                       <label key={n} className="cursor-pointer">
                         <input type="radio" name="score" value={n} required className="peer sr-only" />
-                        <span className="block rounded-md border border-slate-300 py-1 text-center text-xs peer-checked:border-blue-700 peer-checked:bg-blue-700 peer-checked:text-white">{n}</span>
+                        <span className="block rounded-md border border-linea py-1 text-center text-xs peer-checked:border-blue-700 peer-checked:bg-azul peer-checked:text-white">{n}</span>
                       </label>
                     ))}
                   </div>
-                  <textarea name="comment" rows={2} placeholder="Comentario (opcional)" className="w-full rounded-lg border border-slate-300 px-3 py-2" />
-                  <button className="w-full rounded-lg bg-blue-700 py-2 font-semibold text-white hover:bg-blue-800">Enviar</button>
+                  <textarea name="comment" rows={2} placeholder="Comentario (opcional)" className="w-full rounded-lg border border-linea px-3 py-2" />
+                  <button className="w-full rounded-lg bg-azul py-2 font-semibold text-white hover:bg-azul-oscuro">Enviar</button>
                 </form>
               )}
             </section>

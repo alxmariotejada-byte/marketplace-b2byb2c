@@ -16,12 +16,12 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
 
-  if (!ready) return <div className="mx-auto max-w-5xl px-4 py-10 text-slate-500">Cargando…</div>;
+  if (!ready) return <div className="mx-auto max-w-5xl px-4 py-10 text-gris">Cargando…</div>;
   if (!items.length)
     return (
       <div className="mx-auto max-w-5xl px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold">No hay productos para pagar</h1>
-        <Link href="/catalogo" className="mt-6 inline-block rounded-full bg-blue-700 px-6 py-3 font-semibold text-white">Ir al catálogo</Link>
+        <h1 className="ancho text-2xl font-bold">No hay productos para pagar</h1>
+        <Link href="/catalogo" className="mt-6 inline-block rounded-md bg-azul px-6 py-3 font-semibold text-white">Ir al catálogo</Link>
       </div>
     );
 
@@ -64,14 +64,14 @@ export default function CheckoutPage() {
     }
   }
 
-  const input = "w-full rounded-lg border border-slate-300 px-3 py-2";
+  const input = "w-full rounded-lg border border-linea px-3 py-2";
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <h1 className="text-2xl font-bold">Finalizar compra</h1>
-      <p className="text-sm text-slate-500">Cliente {mode === "B2B" ? "empresarial (B2B)" : "persona (B2C)"}</p>
+      <h1 className="ancho text-2xl font-bold">Finalizar compra</h1>
+      <p className="text-sm text-gris">{mode === "B2B" ? "Compra de empresa" : "Compra personal"}</p>
       <form onSubmit={onSubmit} className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
-          <fieldset className="space-y-3 rounded-2xl bg-white p-5 shadow-sm">
+          <fieldset className="space-y-3 rounded-lg border border-linea bg-white p-5">
             <legend className="px-1 text-lg font-semibold">1. Tus datos</legend>
             {mode === "B2B" && (
               <div className="grid gap-3 sm:grid-cols-2">
@@ -86,7 +86,7 @@ export default function CheckoutPage() {
             </div>
           </fieldset>
 
-          <fieldset className="space-y-3 rounded-2xl bg-white p-5 shadow-sm">
+          <fieldset className="space-y-3 rounded-lg border border-linea bg-white p-5">
             <legend className="px-1 text-lg font-semibold">2. Dirección de entrega</legend>
             <input name="address" required placeholder="Dirección completa" className={input} />
             <select name="city" required defaultValue="San Salvador" className={input}>
@@ -94,38 +94,38 @@ export default function CheckoutPage() {
             </select>
           </fieldset>
 
-          <fieldset className="space-y-3 rounded-2xl bg-white p-5 shadow-sm">
+          <fieldset className="space-y-3 rounded-lg border border-linea bg-white p-5">
             <legend className="px-1 text-lg font-semibold">3. Método de pago</legend>
             {methods.map((m) => (
-              <label key={m.id} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 ${selected === m.id ? "border-blue-600 bg-blue-50" : "border-slate-200"}`}>
+              <label key={m.id} className={`flex cursor-pointer items-center gap-3 rounded-md border p-3 ${selected === m.id ? "border-azul bg-azul-claro" : "border-linea"}`}>
                 <input type="radio" name="payment" value={m.id} checked={selected === m.id} onChange={() => setPayment(m.id)} />
                 <span>
                   <span className="block font-medium">{m.label}</span>
-                  <span className="text-xs text-slate-500">{m.hint}</span>
+                  <span className="text-xs text-gris">{m.hint}</span>
                 </span>
               </label>
             ))}
             {selected === "tarjeta" && (
-              <div className="grid gap-3 rounded-xl bg-slate-50 p-3 sm:grid-cols-3">
+              <div className="grid gap-3 rounded-md bg-papel p-3 sm:grid-cols-3">
                 <input name="card" inputMode="numeric" placeholder="4111 1111 1111 1111" className={`${input} sm:col-span-2`} />
                 <input name="exp" placeholder="MM/AA" className={input} />
-                <p className="text-xs text-slate-500 sm:col-span-3">Pasarela simulada para el proyecto: no se guarda ni se cobra la tarjeta.</p>
+                <p className="text-xs text-gris sm:col-span-3">Pasarela simulada para el proyecto: no se guarda ni se cobra la tarjeta.</p>
               </div>
             )}
             {selected === "transferencia" && (
-              <p className="rounded-xl bg-slate-50 p-3 text-sm text-slate-600">
+              <p className="rounded-md bg-papel p-3 text-sm text-gris">
                 Transfiere a Banco Agrícola, cuenta corriente 001-234567-8 a nombre de LOGIMKT S.A. de C.V., usando tu número de pedido como referencia.
               </p>
             )}
           </fieldset>
         </div>
 
-        <aside className="h-fit rounded-2xl bg-white p-5 shadow-sm">
+        <aside className="h-fit rounded-lg border border-linea bg-white p-5">
           <h2 className="text-lg font-semibold">Tu pedido</h2>
           <ul className="mt-3 max-h-72 space-y-2 overflow-auto text-sm">
             {items.map((i) => (
               <li key={i.sku} className="flex justify-between gap-2">
-                <span className="text-slate-600">{i.qty} × {i.name}</span>
+                <span className="text-gris">{i.qty} × {i.name}</span>
                 <span className="whitespace-nowrap">{money(priceOf(i) * i.qty)}</span>
               </li>
             ))}
@@ -136,16 +136,16 @@ export default function CheckoutPage() {
             <div className="flex justify-between pt-1 text-base font-bold"><dt>Total</dt><dd>{money(subtotal + shipping)}</dd></div>
           </dl>
           {mode === "B2B" && subtotal < B2B_MIN_ORDER && (
-            <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">La compra mínima B2B es de {money(B2B_MIN_ORDER)}.</p>
+            <p className="mt-3 rounded-lg bg-kraft-claro p-3 text-sm text-kraft-oscuro">El pedido mínimo para empresas es de {money(B2B_MIN_ORDER)}.</p>
           )}
           {error && <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
           <button
             disabled={sending || (mode === "B2B" && subtotal < B2B_MIN_ORDER)}
-            className="mt-4 w-full rounded-full bg-orange-500 py-3 font-semibold text-white hover:bg-orange-600 disabled:bg-slate-300"
+            className="mt-4 w-full rounded-md bg-senal py-3 font-semibold text-tinta hover:bg-senal-oscuro disabled:bg-linea"
           >
-            {sending ? "Procesando…" : `Confirmar pedido · ${money(subtotal + shipping)}`}
+            {sending ? "Procesando…" : `Confirmar pedido de ${money(subtotal + shipping)}`}
           </button>
-          <p className="mt-2 text-center text-xs text-slate-400">El stock se verifica y reserva al confirmar.</p>
+          <p className="mt-2 text-center text-xs text-gris">El stock se verifica y reserva al confirmar.</p>
         </aside>
       </form>
     </div>

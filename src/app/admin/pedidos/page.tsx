@@ -25,28 +25,28 @@ export default async function PedidosAdmin({ searchParams }: PageProps<"/admin/p
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Gestión de pedidos (OMS)</h1>
-      <p className="text-sm text-slate-500">
+      <h1 className="ancho text-2xl font-bold">Gestión de pedidos (OMS)</h1>
+      <p className="text-sm text-gris">
         Flujo: Recibido → Confirmado → En preparación → Enviado → Entregado → Cerrado. Cada cambio notifica al cliente y alimenta los KPIs.
       </p>
       {typeof sp.ok === "string" && <p className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">{sp.ok}</p>}
       {typeof sp.error === "string" && <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{sp.error}</p>}
 
       <form className="mt-4 flex flex-wrap gap-2 text-sm">
-        <select name="estado" defaultValue={estado} className="rounded-lg border border-slate-300 px-3 py-2">
+        <select name="estado" defaultValue={estado} className="rounded-lg border border-linea px-3 py-2">
           {STATES.map((s) => <option key={s} value={s}>{s || "Todos los estados"}</option>)}
         </select>
-        <select name="canal" defaultValue={canal} className="rounded-lg border border-slate-300 px-3 py-2">
+        <select name="canal" defaultValue={canal} className="rounded-lg border border-linea px-3 py-2">
           <option value="">B2C y B2B</option>
           <option value="B2C">B2C</option>
           <option value="B2B">B2B</option>
         </select>
-        <button className="rounded-lg bg-slate-800 px-4 py-2 font-semibold text-white">Filtrar</button>
+        <button className="rounded-lg bg-tinta px-4 py-2 font-semibold text-white">Filtrar</button>
       </form>
 
-      <div className="mt-4 overflow-x-auto rounded-2xl bg-white shadow-sm">
+      <div className="mt-4 overflow-x-auto rounded-lg border border-linea bg-white">
         <table className="w-full text-sm">
-          <thead className="bg-slate-100 text-left text-xs uppercase text-slate-500">
+          <thead className="bg-papel text-left text-xs uppercase text-gris">
             <tr>
               <th className="p-3">Pedido</th><th className="p-3">Cliente</th><th className="p-3">Canal</th><th className="p-3">Unid.</th>
               <th className="p-3">Total</th><th className="p-3">Pago</th><th className="p-3">Estado</th><th className="p-3">Acciones</th>
@@ -54,20 +54,20 @@ export default async function PedidosAdmin({ searchParams }: PageProps<"/admin/p
           </thead>
           <tbody>
             {orders.length === 0 && (
-              <tr><td colSpan={8} className="p-6 text-center text-slate-500">No hay pedidos.</td></tr>
+              <tr><td colSpan={8} className="p-6 text-center text-gris">No hay pedidos.</td></tr>
             )}
             {orders.map((o) => {
               const next = nextStatus(o.status);
               return (
                 <tr key={o.id} className="border-t align-top">
                   <td className="p-3">
-                    <Link href={`/pedido/${o.code}`} className="font-semibold text-blue-700 hover:underline">{o.code}</Link>
-                    <p className="text-xs text-slate-500">{new Date(o.created_at).toLocaleString("es-SV", { timeZone: "America/El_Salvador" })}</p>
+                    <Link href={`/pedido/${o.code}`} className="font-semibold text-azul hover:underline">{o.code}</Link>
+                    <p className="text-xs text-gris">{new Date(o.created_at).toLocaleString("es-SV", { timeZone: "America/El_Salvador" })}</p>
                   </td>
                   <td className="p-3">
                     {o.company && <p className="font-medium">{o.company}</p>}
                     <p>{o.customer_name}</p>
-                    <p className="text-xs text-slate-500">{o.city}</p>
+                    <p className="text-xs text-gris">{o.city}</p>
                   </td>
                   <td className="p-3">{o.channel}</td>
                   <td className="p-3">{o.items}</td>
@@ -80,7 +80,7 @@ export default async function PedidosAdmin({ searchParams }: PageProps<"/admin/p
                         <form action={advanceOrderAction}>
                           <input type="hidden" name="code" value={o.code} />
                           <input type="hidden" name="back" value={back} />
-                          <button className="w-full whitespace-nowrap rounded-lg bg-blue-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-800">
+                          <button className="w-full whitespace-nowrap rounded-lg bg-azul px-3 py-1.5 text-xs font-semibold text-white hover:bg-azul-oscuro">
                             Pasar a “{next}”
                           </button>
                         </form>
@@ -96,7 +96,7 @@ export default async function PedidosAdmin({ searchParams }: PageProps<"/admin/p
                         <form action={returnOrderAction} className="flex gap-1">
                           <input type="hidden" name="code" value={o.code} />
                           <input type="hidden" name="back" value={back} />
-                          <select name="reason" className="rounded-lg border border-slate-300 px-1 py-1 text-xs">
+                          <select name="reason" className="rounded-lg border border-linea px-1 py-1 text-xs">
                             <option>Producto defectuoso</option>
                             <option>Producto equivocado</option>
                             <option>Llegó dañado</option>

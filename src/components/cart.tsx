@@ -86,7 +86,7 @@ export function CartCount() {
   const { count, ready } = useCart();
   if (!ready || count === 0) return null;
   return (
-    <span className="absolute -right-2 -top-2 min-w-5 rounded-full bg-orange-500 px-1.5 text-center text-xs font-bold leading-5 text-white">
+    <span className="absolute -right-2.5 -top-2 min-w-5 rounded-full bg-senal px-1.5 text-center text-xs font-bold leading-5 text-tinta">
       {count}
     </span>
   );
@@ -112,7 +112,7 @@ export function AddToCartButton({
           max={product.stock}
           value={qty}
           onChange={(e) => setQty(Math.max(1, Math.min(product.stock, Number(e.target.value) || 1)))}
-          className="w-20 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="w-20 rounded-md border border-linea bg-white px-3 py-2 text-sm"
           aria-label="Cantidad"
         />
       )}
@@ -124,9 +124,9 @@ export function AddToCartButton({
           setDone(true);
           setTimeout(() => setDone(false), 1500);
         }}
-        className="flex-1 rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+        className="flex-1 rounded-md bg-azul px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-azul-oscuro disabled:cursor-not-allowed disabled:bg-linea disabled:text-gris"
       >
-        {out ? "Agotado" : done ? "✓ Agregado" : "Agregar al carrito"}
+        {out ? "Sin existencias" : done ? "Agregado al carrito" : "Agregar al carrito"}
       </button>
     </div>
   );
