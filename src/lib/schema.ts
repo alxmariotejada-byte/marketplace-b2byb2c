@@ -97,6 +97,7 @@ CREATE INDEX IF NOT EXISTS reviews_sku_idx ON reviews (sku);
 -- Integración con el ERP/OMS externo (API .NET de LOGIMKT)
 ALTER TABLE products ADD COLUMN IF NOT EXISTS erp_id TEXT;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS erp_synced_at TIMESTAMPTZ;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS erp_order_id TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS erp_order_number TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS erp_status TEXT;

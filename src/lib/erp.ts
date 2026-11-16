@@ -104,6 +104,7 @@ export type ErpProduct = {
   estadoProducto?: string;
   estaPublicado?: boolean;
   disponibilidad?: boolean;
+  imagenUrl?: string | null;
   stock?: ErpStock | null;
   stocks?: ErpStock[];
 };

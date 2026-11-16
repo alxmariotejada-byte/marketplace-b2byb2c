@@ -22,6 +22,7 @@ export async function syncCatalogFromErp() {
       price_b2c: p.precioB2C,
       price_b2b: p.precioB2B ?? null,
       stock: p.disponible,
+      image_url: p.imagenUrl?.trim() || null,
       active: (p.estaPublicado ?? true) && (p.estadoProducto ?? "Activo") === "Activo",
     }));
     const res = await tx(async (c) => {
@@ -31,9 +32,10 @@ export async function syncCatalogFromErp() {
            price_b2c = COALESCE(NULLIF(x.price_b2c, 0), p.price_b2c),
            price_b2b = COALESCE(NULLIF(x.price_b2b, 0), p.price_b2b),
            stock = COALESCE(x.stock, p.stock),
+           image_url = COALESCE(x.image_url, p.image_url),
            status = CASE WHEN x.active THEN 'Activo' ELSE 'Inactivo' END,
            erp_synced_at = now(), updated_at = now()
-         FROM jsonb_to_recordset($1::jsonb) AS x(sku text, erp_id text, name text, price_b2c numeric, price_b2b numeric, stock int, active boolean)
+         FROM jsonb_to_recordset($1::jsonb) AS x(sku text, erp_id text, name text, price_b2c numeric, price_b2b numeric, stock int, image_url text, active boolean)
          WHERE p.sku = x.sku
          RETURNING p.sku`,
         [JSON.stringify(rows)],

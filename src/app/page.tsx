@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getMode } from "@/lib/session";
 import { getBestSellers, getCategories, getFeatured } from "@/lib/products";
 import { B2B_MIN_ORDER, B2C_FREE_SHIPPING_FROM, categoryStyle, money } from "@/lib/shared";
+import { categoryImage, productImage } from "@/lib/product-image";
 import { ProductCard } from "@/components/product-card";
 import { Barcode } from "@/components/barcode";
 
@@ -114,7 +115,8 @@ export default async function Home() {
                   className="flex items-center gap-3 rounded-md px-3 py-3 transition-[filter] hover:brightness-95"
                   style={{ background: s.bg, color: s.fg }}
                 >
-                  <span className="text-3xl" aria-hidden>{s.icon}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={categoryImage(c.category)} alt="" width={44} height={44} className="size-11 shrink-0 drop-shadow-sm" />
                   <span>
                     <span className="block text-sm font-bold leading-tight">{label(c.category)}</span>
                     <span className="text-xs opacity-80">{c.n} productos</span>
@@ -172,7 +174,11 @@ export default async function Home() {
                 {compare.map((p) => (
                   <tr key={p.sku} className="border-b border-white/10">
                     <td className="py-3 pr-3">
-                      <Link href={`/producto/${p.sku}`} className="hover:underline">{p.name}</Link>
+                      <Link href={`/producto/${p.sku}`} className="flex items-center gap-3 hover:underline">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={productImage(p)} alt="" width={32} height={32} className="size-8 shrink-0 object-contain" />
+                        {p.name}
+                      </Link>
                     </td>
                     <td className="py-3 text-right text-white/60">{money(p.price_b2c)}</td>
                     <td className="ancho py-3 text-right font-bold text-senal">{money(p.price_b2b)}</td>

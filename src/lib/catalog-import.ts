@@ -9,17 +9,18 @@ export async function importRows(c: DbClient, rows: CatalogRow[], movementType =
   if (!rows.length) return { created: 0, updated: 0 };
   const res = await c.query<{ sku: string; inserted: boolean }>(
     `INSERT INTO products (sku,name,category,subcategory,price_b2c,price_b2b,stock,stock_min,supplier,origin_country,
-       weight_kg,length_cm,width_cm,height_cm,unit,status,ean,description)
+       weight_kg,length_cm,width_cm,height_cm,unit,status,ean,description,image_url)
      SELECT sku,name,category,subcategory,price_b2c,price_b2b,stock,stock_min,supplier,origin_country,
-       weight_kg,length_cm,width_cm,height_cm,unit,status,ean,description
+       weight_kg,length_cm,width_cm,height_cm,unit,status,ean,description,image_url
      FROM jsonb_to_recordset($1::jsonb) AS x(sku text,name text,category text,subcategory text,price_b2c numeric,
        price_b2b numeric,stock int,stock_min int,supplier text,origin_country text,weight_kg numeric,length_cm numeric,
-       width_cm numeric,height_cm numeric,unit text,status text,ean text,description text)
+       width_cm numeric,height_cm numeric,unit text,status text,ean text,description text,image_url text)
      ON CONFLICT (sku) DO UPDATE SET name=EXCLUDED.name, category=EXCLUDED.category, subcategory=EXCLUDED.subcategory,
        price_b2c=EXCLUDED.price_b2c, price_b2b=EXCLUDED.price_b2b, stock_min=EXCLUDED.stock_min,
        supplier=EXCLUDED.supplier, origin_country=EXCLUDED.origin_country, weight_kg=EXCLUDED.weight_kg,
        length_cm=EXCLUDED.length_cm, width_cm=EXCLUDED.width_cm, height_cm=EXCLUDED.height_cm, unit=EXCLUDED.unit,
-       status=EXCLUDED.status, ean=EXCLUDED.ean, description=EXCLUDED.description, updated_at=now()
+       status=EXCLUDED.status, ean=EXCLUDED.ean, description=EXCLUDED.description,
+       image_url=COALESCE(EXCLUDED.image_url, products.image_url), updated_at=now()
      RETURNING sku, (xmax = 0) AS inserted`,
     [JSON.stringify(rows)],
   );

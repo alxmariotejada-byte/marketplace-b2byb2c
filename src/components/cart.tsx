@@ -7,6 +7,8 @@ export type CartItem = {
   sku: string;
   name: string;
   category: string;
+  /** URL de la imagen del producto (opcional: carritos guardados antes no la tienen). */
+  image?: string;
   price_b2c: number;
   price_b2b: number;
   stock: number;

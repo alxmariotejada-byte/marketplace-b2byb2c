@@ -142,6 +142,7 @@ Campos usados de cada `Producto` y cómo se mapean a la tabla `products` de la t
 | `precioB2C` | `price_b2c` | Se actualiza si es > 0 |
 | `precioB2B` (solo Admin) | `price_b2b` | Se actualiza si viene y es > 0 |
 | `stock.cantidadDisponible` o `cantidadTotal − cantidadReservada − cantidadBloqueada` (solo Admin) | `stock` | Si no viene (Comprador), se conserva el stock local |
+| `imagenUrl` | `image_url` | Si viene con valor, reemplaza la ilustración; si viene vacío, se conserva la actual |
 | `estaPublicado` y `estadoProducto == "Activo"` | `status` (`Activo`/`Inactivo`) | Inactivo = no se muestra en la tienda |
 
 Además se marca `erp_synced_at = now()` y se registra el resultado en `erp_sync_log`.
@@ -210,7 +211,7 @@ Se crea sola al primer uso (`src/lib/schema.ts`, sentencias idempotentes). Tabla
 
 | Tabla | Para qué |
 | --- | --- |
-| `products` | Catálogo local (SKU, nombre, categoría, precios B2C/B2B, stock, stock mínimo, proveedor, peso, medidas, EAN, `erp_id`) |
+| `products` | Catálogo local (SKU, nombre, categoría, precios B2C/B2B, stock, stock mínimo, proveedor, peso, medidas, EAN, `erp_id`, `image_url`) |
 | `orders` | Pedidos `LMK-xxxxxx`: cliente, canal B2C/B2B, pago, totales, costo logístico, estado, guía, fechas, NPS, `erp_*` |
 | `order_items` | Líneas: cantidad solicitada vs surtida (alimenta el Fill Rate) |
 | `order_events` | Historial de estados (alimenta Lead Time y tiempo de procesamiento) |
@@ -287,6 +288,19 @@ src/
   components/                Carrito, tarjetas de producto, código de barras EAN-13, selector de modo
 data/                        Excel original y catalogo.json
 ```
+
+### Imágenes de los productos
+
+`src/lib/product-image.ts` decide la imagen de cada producto, en este orden:
+
+1. `products.image_url`: la foto que manda el ERP (campo `imagenUrl` de `/api/productos`, se guarda al sincronizar)
+   o la columna `Imagen` / `URL Imagen` del Excel al importar. Si existe, siempre gana.
+2. Si no hay foto, una ilustración 3D según el tipo de producto (reglas por nombre y subcategoría), guardada en
+   `public/productos/` (Fluent Emoji de Microsoft, licencia MIT). Para regenerarlas:
+   `npm pack @lobehub/fluent-emoji-3d && tar xzf lobehub-fluent-emoji-3d-*.tgz && node scripts/imagenes-productos.mjs package/assets`.
+
+Hoy el ERP devuelve `imagenUrl: null`, así que se ven las ilustraciones. Cuando el ERP tenga fotos, aparecerán solas
+al sincronizar desde `/admin/erp`.
 
 ---
 

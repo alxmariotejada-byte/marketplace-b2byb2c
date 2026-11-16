@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/components/cart";
 import { B2B_MIN_ORDER, B2C_FREE_SHIPPING_FROM, B2C_SHIPPING, categoryStyle, money } from "@/lib/shared";
+import { productImage } from "@/lib/product-image";
 
 export default function CarritoPage() {
   const { items, ready, subtotal, priceOf, setQty, remove, mode } = useCart();
@@ -30,7 +31,10 @@ export default function CarritoPage() {
             const s = categoryStyle(i.category);
             return (
               <li key={i.sku} className="flex items-center gap-4 rounded-lg border border-linea bg-white p-4">
-                <div className="flex size-16 shrink-0 items-center justify-center rounded-md text-3xl" style={{ background: s.bg }}>{s.icon}</div>
+                <div className="visual flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md" style={{ "--tono": s.bg } as React.CSSProperties}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={i.image ?? productImage(i)} alt="" className={i.image && !i.image.startsWith("/productos/") ? "size-full object-cover" : "size-11 drop-shadow"} />
+                </div>
                 <div className="min-w-0 flex-1">
                   <Link href={`/producto/${encodeURIComponent(i.sku)}`} className="font-semibold hover:text-azul">{i.name}</Link>
                   <p className="text-xs text-gris">{money(priceOf(i))} por unidad</p>

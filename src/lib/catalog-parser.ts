@@ -19,6 +19,7 @@ export type CatalogRow = {
   status: string;
   ean: string | null;
   description: string | null;
+  image_url: string | null;
 };
 
 // Normaliza encabezados: "Precio B2C ($)" -> "precioB2C" en minúsculas sin acentos ni símbolos.
@@ -57,6 +58,10 @@ const HEADER_MAP: Record<string, keyof CatalogRow> = {
   ean: "ean",
   descripcioncorta: "description",
   descripcion: "description",
+  imagen: "image_url",
+  imagenurl: "image_url",
+  urlimagen: "image_url",
+  foto: "image_url",
 };
 
 function cellText(v: ExcelJS.CellValue): string {
@@ -125,6 +130,7 @@ export function parseRows(header: string[], data: string[][]): ParseResult {
       status: zeroPrice ? "Inactivo" : rec.status || "Activo",
       ean: rec.ean || null,
       description: rec.description || null,
+      image_url: /^(https?:\/\/|\/)/.test(rec.image_url ?? "") ? rec.image_url : null,
     });
   });
   return { rows, errors };

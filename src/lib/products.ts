@@ -20,6 +20,7 @@ export type Product = {
   status: string;
   ean: string | null;
   description: string | null;
+  image_url: string | null;
   rating: number | null;
   reviews: number;
 };

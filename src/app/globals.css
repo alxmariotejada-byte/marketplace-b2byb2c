@@ -77,3 +77,11 @@ body {
     }
   }
 }
+
+/* Fondo de las imágenes de producto: color de la categoría con luz arriba y piso suave. */
+.visual {
+  background:
+    radial-gradient(60% 18% at 50% 86%, rgb(21 34 59 / 0.1), transparent 70%),
+    radial-gradient(90% 70% at 50% 30%, rgb(255 255 255 / 0.75), transparent 70%),
+    var(--tono, #eef2f7);
+}

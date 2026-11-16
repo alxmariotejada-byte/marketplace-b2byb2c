@@ -4,6 +4,7 @@ import { getMode } from "@/lib/session";
 import { getProduct, getRelated, getReviews } from "@/lib/products";
 import { money } from "@/lib/shared";
 import { AddToCartButton } from "@/components/cart";
+import { productImage } from "@/lib/product-image";
 import { ProductCard, ProductVisual, Stars, StockBadge } from "@/components/product-card";
 import { addReview } from "@/app/actions";
 import { Barcode } from "@/components/barcode";
@@ -50,7 +51,7 @@ export default async function ProductPage({ params, searchParams }: PageProps<"/
             <div className="mt-4">
               <AddToCartButton
                 withQty
-                product={{ sku: p.sku, name: p.name, category: p.category, price_b2c: p.price_b2c, price_b2b: p.price_b2b, stock: p.stock }}
+                product={{ sku: p.sku, name: p.name, category: p.category, image: productImage(p), price_b2c: p.price_b2c, price_b2b: p.price_b2b, stock: p.stock }}
               />
             </div>
             <p className="mt-3 text-xs text-gris">🚚 Entrega estimada: {mode === "B2B" ? "5" : "3"} días hábiles</p>
