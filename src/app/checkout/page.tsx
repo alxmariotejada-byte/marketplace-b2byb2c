@@ -146,6 +146,11 @@ export default function CheckoutPage() {
             {sending ? "Procesando…" : `Confirmar pedido de ${money(subtotal + shipping)}`}
           </button>
           <p className="mt-2 text-center text-xs text-gris">El stock se verifica y reserva al confirmar.</p>
+          <p className="mt-1 text-center text-xs text-gris">
+            Al confirmar aceptas los <Link href="/politicas/terminos" className="underline hover:text-azul">términos</Link> y las políticas de{" "}
+            <Link href="/politicas/envios" className="underline hover:text-azul">envío</Link> y{" "}
+            <Link href="/politicas/devoluciones" className="underline hover:text-azul">devoluciones</Link>.
+          </p>
         </aside>
       </form>
     </div>

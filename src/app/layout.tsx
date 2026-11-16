@@ -83,7 +83,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           </header>
           <main className="flex-1">{children}</main>
           <footer className="mt-20 bg-tinta text-white/75">
-            <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 text-sm sm:grid-cols-[1.5fr_1fr_1fr]">
+            <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 text-sm sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
               <div>
                 <p className="display text-xl text-white">LOGIMKT</p>
                 <p className="mt-2 max-w-xs">Marketplace salvadoreño para hogares y negocios. San Salvador, El Salvador.</p>
@@ -93,6 +93,15 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                 <Link href="/catalogo" className="hover:text-white">Catálogo completo</Link>
                 <Link href="/pedido" className="hover:text-white">Rastrear un pedido</Link>
                 <Link href="/carrito" className="hover:text-white">Mi carrito</Link>
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="font-semibold text-white">Políticas</p>
+                <Link href="/politicas/terminos" className="hover:text-white">Términos y condiciones</Link>
+                <Link href="/politicas/envios" className="hover:text-white">Envíos y entregas</Link>
+                <Link href="/politicas/devoluciones" className="hover:text-white">Devoluciones y reembolsos</Link>
+                <Link href="/politicas/pagos" className="hover:text-white">Pagos y facturación</Link>
+                <Link href="/politicas/privacidad" className="hover:text-white">Privacidad</Link>
+                <Link href="/politicas" className="hover:text-white">Ver todas</Link>
               </div>
               <div className="flex flex-col gap-2">
                 <p className="font-semibold text-white">Operación</p>
