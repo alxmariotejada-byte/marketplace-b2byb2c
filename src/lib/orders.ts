@@ -1,5 +1,5 @@
 import "server-only";
-import type { PoolClient } from "pg";
+import type { DbClient } from "./db";
 import { query, tx } from "./db";
 import {
   B2B_MIN_ORDER, B2C_FREE_SHIPPING_FROM, B2C_MIN_ORDER, B2C_SHIPPING, PAYMENT_METHODS, type Channel,
@@ -35,7 +35,7 @@ function paymentStatus(method: string): string {
   }
 }
 
-async function addEvent(c: PoolClient, orderId: number, status: string, note: string) {
+async function addEvent(c: DbClient, orderId: number, status: string, note: string) {
   await c.query("INSERT INTO order_events (order_id,status,note) VALUES ($1,$2,$3)", [orderId, status, note]);
 }
 
@@ -184,7 +184,7 @@ export async function advanceOrder(code: string) {
   });
 }
 
-async function restock(c: PoolClient, orderId: number, code: string, type: string) {
+async function restock(c: DbClient, orderId: number, code: string, type: string) {
   const { rows } = await c.query<{ sku: string; qty: number }>(
     "SELECT sku, qty FROM order_items WHERE order_id=$1 AND qty > 0", [orderId],
   );

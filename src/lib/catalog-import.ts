@@ -1,11 +1,11 @@
-import type { PoolClient } from "pg";
+import type { DbClient } from "./db";
 import type { CatalogRow } from "./catalog-parser";
 
 /**
  * Carga masiva del ERP: inserta productos nuevos y actualiza datos y precios de los existentes
  * en una sola consulta. Registra el movimiento de inventario inicial de cada SKU nuevo.
  */
-export async function importRows(c: PoolClient, rows: CatalogRow[], movementType = "CARGA_MASIVA") {
+export async function importRows(c: DbClient, rows: CatalogRow[], movementType = "CARGA_MASIVA") {
   if (!rows.length) return { created: 0, updated: 0 };
   const res = await c.query<{ sku: string; inserted: boolean }>(
     `INSERT INTO products (sku,name,category,subcategory,price_b2c,price_b2b,stock,stock_min,supplier,origin_country,

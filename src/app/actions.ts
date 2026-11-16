@@ -49,7 +49,7 @@ export async function findOrder(formData: FormData) {
 /* ---------- Administración (ERP) ---------- */
 
 export async function adminLogin(formData: FormData) {
-  if (!process.env.ADMIN_PASSWORD) redirect("/admin?error=config");
+  if (!process.env.ADMIN_PASSWORD && process.env.VERCEL) redirect("/admin?error=config");
   if (!checkPassword(String(formData.get("password") || ""))) redirect("/admin?error=1");
   const c = await cookies();
   c.set("admin", sessionValue(), { path: "/", httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 60 * 60 * 12 });

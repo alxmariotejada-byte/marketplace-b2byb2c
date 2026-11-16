@@ -8,14 +8,19 @@ export async function getMode(): Promise<Channel> {
   return c.get("modo")?.value === "B2B" ? "B2B" : "B2C";
 }
 
+/** En tu computadora (sin Vercel) la contraseña por defecto es "admin123". En Vercel es obligatoria. */
+function adminPassword(): string | undefined {
+  return process.env.ADMIN_PASSWORD || (process.env.VERCEL ? undefined : "admin123");
+}
+
 function adminToken(): string | null {
-  const pwd = process.env.ADMIN_PASSWORD;
+  const pwd = adminPassword();
   if (!pwd) return null;
   return createHash("sha256").update("logimkt-admin:" + pwd).digest("hex");
 }
 
 export function checkPassword(pwd: string): boolean {
-  const real = process.env.ADMIN_PASSWORD;
+  const real = adminPassword();
   if (!real) return false;
   const a = Buffer.from(createHash("sha256").update(pwd).digest("hex"));
   const b = Buffer.from(createHash("sha256").update(real).digest("hex"));

@@ -54,13 +54,21 @@ Los pagos son **simulados** (no se cobra nada ni se guarda la tarjeta).
 
 Después, en `/admin/pedidos`, avanza los pedidos por cada estado hasta **Entregado**, registra una devolución y responde la encuesta NPS desde la página del pedido. El dashboard `/admin` mostrará los KPIs calculados. Toma captura de cada paso.
 
-## Trabajar en tu computadora (opcional)
+## Verla en tu computadora (localhost)
 
-```bash
-npm install
-cp .env.example .env.local   # y pega tu DATABASE_URL de Neon
-npm run dev                  # abre http://localhost:3000
-```
+No necesitas base de datos ni contraseñas: si no hay `DATABASE_URL`, la página usa una base de datos Postgres interna guardada en la carpeta `.data/` y carga los 500 productos sola.
+
+1. Instala **Node.js LTS** desde <https://nodejs.org> (solo una vez).
+2. En Windows, haz doble clic en **`iniciar-local.bat`**. O en una terminal:
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+3. Abre <http://localhost:3000>. El panel ERP está en <http://localhost:3000/admin> con la contraseña **`admin123`**.
+
+Para usar Neon desde tu computadora, copia `.env.example` como `.env.local` y pega tu `DATABASE_URL`.
 
 Si cambias el Excel del catálogo, puedes subirlo desde `/admin/inventario` (carga masiva). Los SKUs nuevos entran con su stock inicial; en los existentes se actualizan datos y precios y se conserva el stock real.
 
