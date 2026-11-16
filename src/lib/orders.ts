@@ -232,6 +232,7 @@ export type OrderRow = {
   subtotal: number; shipping_charge: number; total: number; logistics_cost: number; status: string; carrier: string | null;
   tracking: string | null; promised_at: Date; shipped_at: Date | null; delivered_at: Date | null; return_reason: string | null;
   nps_score: number | null; created_at: Date;
+  erp_order_id: string | null; erp_order_number: string | null; erp_status: string | null; erp_error: string | null;
 };
 
 export async function getOrder(code: string) {

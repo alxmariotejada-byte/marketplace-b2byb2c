@@ -116,3 +116,48 @@ export async function adjustStock(formData: FormData) {
   revalidatePath("/admin", "layout");
   backWith(formData, `Stock de ${sku} actualizado a ${rows[0].stock}`, true);
 }
+
+/* ---------- Integración ERP ---------- */
+
+export async function erpTestAction(formData: FormData) {
+  await guard();
+  const { erpConfig, erpPing } = await import("@/lib/erp");
+  const cfg = erpConfig();
+  if (!cfg) backWith(formData, "Falta configurar ERP_API_URL, ERP_EMAIL y ERP_PASSWORD", false);
+  let msg: string;
+  try {
+    const r = await erpPing(cfg!);
+    msg = `Conexión correcta con ${cfg!.email} (rol ${r.role || "desconocido"}). El ERP tiene ${r.products} productos publicados.`;
+    const adminCfg = erpConfig("catalogo");
+    if (adminCfg && adminCfg.email !== cfg!.email) {
+      const a = await erpPing(adminCfg);
+      msg += ` Usuario de catálogo ${adminCfg.email} (rol ${a.role || "desconocido"}) también conectado.`;
+    }
+  } catch (e) {
+    backWith(formData, (e as Error).message, false);
+  }
+  backWith(formData, msg!, true);
+}
+
+export async function erpSyncAction(formData: FormData) {
+  await guard();
+  const { syncCatalogFromErp } = await import("@/lib/erp-sync");
+  let msg: string;
+  try {
+    msg = (await syncCatalogFromErp()).detail;
+  } catch (e) {
+    backWith(formData, (e as Error).message, false);
+  }
+  revalidatePath("/", "layout");
+  backWith(formData, msg!, true);
+}
+
+export async function erpRetryAction(formData: FormData) {
+  await guard();
+  const { pushOrderToErp } = await import("@/lib/erp-sync");
+  const code = String(formData.get("code") || "");
+  const r = await pushOrderToErp(code);
+  revalidatePath("/admin", "layout");
+  if ("ok" in r && r.ok === false) backWith(formData, r.error ?? "Error al enviar", false);
+  backWith(formData, `Pedido ${code} enviado al ERP`, true);
+}

@@ -25,6 +25,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           ["/admin", "Dashboard KPIs"],
           ["/admin/pedidos", "Pedidos (OMS)"],
           ["/admin/inventario", "Inventario"],
+          ["/admin/erp", "Conexión ERP"],
         ].map(([href, label]) => (
           <Link key={href} href={href} className="rounded-lg px-3 py-1.5 text-sm font-medium text-tinta hover:bg-linea">{label}</Link>
         ))}

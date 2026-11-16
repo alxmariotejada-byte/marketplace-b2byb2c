@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import { pushOrderToErp } from "@/lib/erp-sync";
 import { createOrder, OrderError, type OrderInput } from "@/lib/orders";
 
 // API del OMS: el Marketplace envía aquí el carrito y el OMS crea el pedido contra el inventario del ERP.
@@ -11,6 +12,8 @@ export async function POST(req: Request) {
   }
   try {
     const result = await createOrder(body);
+    // Después de responder al cliente, se envía el pedido al OMS del ERP (si está configurado).
+    after(() => pushOrderToErp(result.code).catch((e) => console.error("ERP", e)));
     return NextResponse.json(result, { status: 201 });
   } catch (e) {
     if (e instanceof OrderError) return NextResponse.json({ error: e.message }, { status: 422 });

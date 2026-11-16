@@ -93,4 +93,20 @@ CREATE TABLE IF NOT EXISTS reviews (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS reviews_sku_idx ON reviews (sku);
+
+-- Integración con el ERP/OMS externo (API .NET de LOGIMKT)
+ALTER TABLE products ADD COLUMN IF NOT EXISTS erp_id TEXT;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS erp_synced_at TIMESTAMPTZ;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS erp_order_id TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS erp_order_number TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS erp_status TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS erp_error TEXT;
+
+CREATE TABLE IF NOT EXISTS erp_sync_log (
+  id         SERIAL PRIMARY KEY,
+  kind       TEXT NOT NULL,
+  ok         BOOLEAN NOT NULL,
+  detail     TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 `;

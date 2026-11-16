@@ -44,6 +44,29 @@ Los pagos son **simulados** (no se cobra nada ni se guarda la tarjeta).
 - Tienda: la dirección principal.
 - Panel ERP: agrega `/admin` a la dirección y entra con tu `ADMIN_PASSWORD`.
 
+## Conexión con el ERP/OMS de LOGIMKT (Grupos A y B)
+
+La tienda se conecta a la API del ERP de [Marzza01/ERP-Log-stica-](https://github.com/Marzza01/ERP-Log-stica-):
+
+| Dirección | Qué pasa | Endpoint del ERP |
+| --- | --- | --- |
+| ERP → Tienda | Al pulsar **Sincronizar catálogo y stock** en `/admin/erp`, la tienda trae los productos publicados y actualiza por SKU precios, stock disponible y estado | `GET /api/productos` |
+| Tienda → OMS | Cada pedido nuevo se envía al OMS, que reserva el stock y procesa el pago | `POST /api/checkout/v2/comprar` |
+| OMS → Tienda | La página del pedido muestra el número de orden y el estado en el ERP | `GET /api/ordenes/{id}` |
+
+Configúralo con variables de entorno (en `.env.local` o en Vercel):
+
+```
+ERP_API_URL=https://marketplaceerp-api.onrender.com
+ERP_EMAIL=usuario-comprador@...      # rol Comprador: crea los pedidos
+ERP_PASSWORD=...
+ERP_ADMIN_EMAIL=usuario-admin@...    # opcional: rol Admin, trae stock y precio B2B
+ERP_ADMIN_PASSWORD=...
+```
+
+Si el ERP no responde, la compra igual se registra en la tienda y el pedido queda marcado para reenviarlo desde `/admin/erp`.
+Para que el ERP acepte pedidos, su pasarela de pagos debe estar habilitada (si está deshabilitada responde “La pasarela de pagos está deshabilitada”).
+
 ## Guion para las 5 compras de prueba (evidencia)
 
 1. Como **Personas**: compra 1 producto con **tarjeta** (usa `4111 1111 1111 1111`).

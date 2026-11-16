@@ -4,6 +4,7 @@ import { getOrder } from "@/lib/orders";
 import { ORDER_FLOW, PAYMENT_METHODS, money, statusColor } from "@/lib/shared";
 import { submitNps } from "@/app/actions";
 import { Barcode } from "@/components/barcode";
+import { refreshErpOrder } from "@/lib/erp-sync";
 
 const guideDigits = (t: string) => t.replace(/\D/g, "").padEnd(12, "0").slice(0, 12);
 
@@ -16,6 +17,7 @@ export default async function PedidoPage({ params, searchParams }: PageProps<"/p
   const data = await getOrder(decodeURIComponent(code).toUpperCase());
   if (!data) notFound();
   const { order: o, items, events } = data;
+  const erp = await refreshErpOrder(o.code);
   const stepIdx = ORDER_FLOW.indexOf(o.status as (typeof ORDER_FLOW)[number]);
   const method = [...PAYMENT_METHODS.B2C, ...PAYMENT_METHODS.B2B].find((m) => m.id === o.payment_method)?.label ?? o.payment_method;
   const canRate = ["Entregado", "Cerrado", "Devuelto"].includes(o.status);
@@ -116,6 +118,13 @@ export default async function PedidoPage({ params, searchParams }: PageProps<"/p
             <p className="text-gris">{o.address}, {o.city}</p>
             <p className="mt-3 text-gris">Entrega prometida: <strong>{dt(o.promised_at)}</strong></p>
             {o.delivered_at && <p className="text-gris">Entregado: <strong>{dt(o.delivered_at)}</strong></p>}
+            {(erp || o.erp_order_number) && (
+              <p className="mt-3 rounded-md bg-azul-claro p-3 text-tinta">
+                Registrado en el ERP como <strong>{erp?.numeroOrden ?? o.erp_order_number}</strong>
+                {(erp?.estado ?? o.erp_status) && <>, estado <strong>{erp?.estado ?? o.erp_status}</strong></>}
+                {erp?.guiaEnvio && <>, guía {erp.guiaEnvio}</>}.
+              </p>
+            )}
           </section>
 
           {canRate && (
